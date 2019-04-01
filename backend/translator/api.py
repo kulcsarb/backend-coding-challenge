@@ -5,6 +5,7 @@ import socketio
 from . import tasks
 from . import REDIS_URL, init_logging
 
+
 LOGGER = logging.getLogger('translator.api')
 
 sio = socketio.Server(async_mode='eventlet', \
@@ -24,4 +25,5 @@ def message(sid, data):
 if __name__ == '__main__':   
     init_logging()
     LOGGER.info("Starting WSGI server...")
+    LOGGER.info("Redis at: %s" % REDIS_URL)
     eventlet.wsgi.server(eventlet.listen(('', 8000)), app)

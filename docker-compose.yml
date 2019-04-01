@@ -1,0 +1,43 @@
+version: '3'
+services:
+  api:
+    image: translator/backend
+    build: ./backend    
+    hostname: api
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - "POSTGRESQL_URL=pgsql://postgres:postgres@postgres"
+      - "REDIS_URL=redis://redis"
+    env_file:
+      - .env    
+    ports:
+      - "8000:8000"
+    entrypoint: ["python", "-m", "translator.api"]
+  worker:
+    image: translator/backend
+    build: ./backend
+    hostname: worker
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - "POSTGRESQL_URL=pgsql://postgres:postgres@postgres"
+      - "REDIS_URL=redis://redis"
+    env_file:
+      - .env    
+    entrypoint: ["celery", "worker", "-A", "translator.tasks"]
+  postgres:
+    image: postgres:11-alpine
+    hostname: postgres
+    environment:
+      - "POSTGRES_PASSWORD=postgres"
+      - "POSTGRES_USER=postgres"
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+  redis:
+    image: redis:5-alpine
+    hostname: redis
+volumes:
+  postgresql_data:
