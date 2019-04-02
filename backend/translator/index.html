@@ -2,13 +2,13 @@
 <script type="text/javascript" charset="utf-8">
     var socket = io.connect('http://' + document.domain + ':' + location.port);
     socket.on('connect', function() {
-        socket.emit('translate', {data: 'translate this!'});
+        socket.emit('translate', {text: 'translate this!'});
     });
-    socket.on('status', function(msg) {
-         console.log('Received: ' + msg.data);                  
+    socket.on('error', function(msg) {
+         console.log('ERROR: ' + msg.data);                  
     });
-    socket.on('ping', function(msg) {
-         console.log('Received: ' + msg.data);                  
+    socket.on('progress', function(msg) {
+         console.log('TRANSLATION: ' + msg.data);                  
     });
 
 </script>

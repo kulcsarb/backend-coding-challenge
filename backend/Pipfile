@@ -12,6 +12,7 @@ celery = "*"
 python-socketio = "*"
 eventlet = "*"
 redis = "*"
+unbabel-py = "*"
 
 [requires]
 python_version = "3.7"

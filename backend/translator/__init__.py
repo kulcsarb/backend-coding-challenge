@@ -12,7 +12,6 @@ load_dotenv(find_dotenv())
 
 POSTGRESQL_URL = os.getenv("POSTGRESQL_URL")
 REDIS_URL = os.getenv("REDIS_URL")
-UNBABEL_API_URL = os.getenv("UNBABEL_API_URL")
 UNBABEL_USERNAME = os.getenv("UNBABEL_USERNAME")
 UNBABEL_API_KEY = os.getenv("UNBABEL_API_KEY")
 

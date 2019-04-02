@@ -16,10 +16,17 @@ app = socketio.WSGIApp(sio, static_files={
     '/': {'content_type': 'text/html', 'filename': 'translator/index.html'}
 })
 
+
 @sio.on('translate')
 def message(sid, data):
     LOGGER.info('MESSAGE RECEIVED %s %s ' % (sid, data))
-    tasks.translate.delay({'sid': sid, 'data': data})
+    tasks.translate.delay(sid, data['text'])
+
+
+@sio.on('check')
+def message(sid, data):
+    LOGGER.info('MESSAGE RECEIVED %s %s ' % (sid, data))
+    tasks.get_translation(sid, data['uid'])
 
 
 if __name__ == '__main__':   
