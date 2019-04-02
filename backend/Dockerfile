@@ -11,7 +11,8 @@ COPY Pipfile* /app/
 
 RUN pipenv install --system --deploy --ignore-pipfile
 
-COPY translator translator
+COPY . .
+RUN chmod +x wait-for-it.sh
 
 EXPOSE 8000
 

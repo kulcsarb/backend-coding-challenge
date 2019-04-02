@@ -2,7 +2,7 @@ import eventlet
 eventlet.monkey_patch()
 import logging 
 import socketio
-from . import tasks
+from . import tasks, db
 from . import REDIS_URL, init_logging
 
 
@@ -31,6 +31,7 @@ def message(sid, data):
 
 if __name__ == '__main__':   
     init_logging()
+    db.init()
     LOGGER.info("Starting WSGI server...")
     LOGGER.info("Redis at: %s" % REDIS_URL)
     eventlet.wsgi.server(eventlet.listen(('', 8000)), app)

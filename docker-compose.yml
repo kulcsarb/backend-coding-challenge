@@ -7,14 +7,11 @@ services:
     depends_on:
       - postgres
       - redis
-    environment:
-      - "POSTGRESQL_URL=pgsql://postgres:postgres@postgres"
-      - "REDIS_URL=redis://redis"
     env_file:
       - .env    
     ports:
       - "8000:8000"
-    entrypoint: ["python", "-m", "translator.api"]
+    entrypoint: ["/app/wait-for-it.sh", "${PG_HOST}:${PG_PORT}", "--", "python", "-m", "translator.api"]
   worker:
     image: translator/backend
     build: ./backend
@@ -22,18 +19,24 @@ services:
     depends_on:
       - postgres
       - redis
-    environment:
-      - "POSTGRESQL_URL=pgsql://postgres:postgres@postgres"
-      - "REDIS_URL=redis://redis"
     env_file:
       - .env    
-    entrypoint: ["celery", "worker", "-A", "translator.tasks"]
+    entrypoint: ["/app/wait-for-it.sh", "${PG_HOST}:${PG_PORT}", "--", "python", "-m", "translator.worker"]
+  migrator:
+    image: translator/backend
+    build: ./backend
+    hostname: migrator
+    depends_on:
+      - postgres      
+    env_file:
+      - .env    
+    entrypoint: ["/app/wait-for-it.sh", "${PG_HOST}:${PG_PORT}", "--", "fab", "db.init"]
   postgres:
     image: postgres:11-alpine
     hostname: postgres
     environment:
-      - "POSTGRES_PASSWORD=postgres"
-      - "POSTGRES_USER=postgres"
+      - "PG_PASSWORD=postgres"
+      - "PG_USER=postgres"
     volumes:
       - postgresql_data:/var/lib/postgresql/data
   redis:

@@ -2,7 +2,7 @@
 <script type="text/javascript" charset="utf-8">
     var socket = io.connect('http://' + document.domain + ':' + location.port);
     socket.on('connect', function() {
-        socket.emit('translate', {text: 'translate this!'});
+        socket.emit('translate', {text: 'Thanks, now everything is fine!'});
     });
     socket.on('error', function(msg) {
          console.log('ERROR: ' + msg.data);                  

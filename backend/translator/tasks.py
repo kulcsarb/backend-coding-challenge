@@ -3,10 +3,13 @@ import socketio
 import json
 import logging 
 from celery import Celery
-from . import REDIS_URL, UNBABEL_API_KEY, UNBABEL_USERNAME
-from .unbabel_api import UnbabelApi, UnauthorizedException, BadRequestException
+from celery.bin import worker
 
-LOGGER = logging.getLogger()
+from . import REDIS_URL, UNBABEL_API_KEY, UNBABEL_USERNAME, init_logging
+from .unbabel_api import UnbabelApi, UnauthorizedException, BadRequestException
+from . import db
+
+LOGGER = logging.getLogger('translator.tasks')
 
 app = Celery('translator', broker=REDIS_URL)
 sio = socketio.Server(client_manager=socketio.RedisManager(REDIS_URL), write_only=True)
@@ -22,19 +25,28 @@ def progress_event(sid, translation):
 def error_event(sid, error):
     event('error', sid, error)
 
-
 def refresh(sid, translation):
     if translation.status != "completed":
-        get_translation.apply_async((sid, translation.uid), countdown=1)
+        get_translation.apply_async((sid, translation.uid), countdown=2)
+ 
 
 @app.task
-def translate(sid, text):
+def translate(sid, text):                
     try:
         translation = unbabel.post_translations(
                 text=text,
                 source_language="en", 
-                target_language="es")                
+                target_language="es"
+        )            
         
+        db.new_translation(sid, \
+                translation.uid, \
+                translation.text, \
+                translation.source_language, \
+                translation.target_language, \
+                translation.status
+        )
+
         progress_event(sid, translation)
 
         refresh(sid, translation)
@@ -45,18 +57,22 @@ def translate(sid, text):
     
 
 @app.task
-def get_translation(sid, uid):    
+def get_translation(sid, uid):        
     try:
-        translation = unbabel.get_translation(uid)
-        
-        progress_event(sid, translation)
+        translation = unbabel.get_translation(uid)            
 
+        db.update_translation(uid, \
+                    translation.status, \
+                    translation.translation
+        )
+
+        progress_event(sid, translation)
+        
         refresh(sid, translation)
         
     except Exception as e:
         LOGGER.error(traceback.format_exc())        
         error_event(sid, 'STATUS FAILED')
-    
 
-if __name__ == '__main__':    
-    app.start()
+
+

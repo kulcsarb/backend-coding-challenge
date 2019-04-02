@@ -13,6 +13,11 @@ python-socketio = "*"
 eventlet = "*"
 redis = "*"
 unbabel-py = "*"
+alembic = "*"
+sqlalchemy = "*"
+psycopg2 = "*"
+yoyo-migrations = "*"
+fabric3 = "*"
 
 [requires]
 python_version = "3.7"
