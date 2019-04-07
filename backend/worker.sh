@@ -1,1 +1,1 @@
-env/bin/celery worker -A translator.tasks --loglevel=info
+celery worker -A translator.tasks --loglevel=info

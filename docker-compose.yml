@@ -7,10 +7,10 @@ services:
     depends_on:
       - postgres
       - redis
+    ports: 
+      - "8000:5000"
     env_file:
       - .env    
-    ports:
-      - "8000:8000"
     entrypoint: ["/app/wait-for-it.sh", "${PG_HOST}:${PG_PORT}", "--", "python", "-m", "translator.api"]
   worker:
     image: translator/backend
