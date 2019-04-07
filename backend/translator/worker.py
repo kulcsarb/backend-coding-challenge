@@ -8,7 +8,7 @@ LOGGER = logging.getLogger('translator.worker')
 
 if __name__ == '__main__':    
     init_logging()    
-    # db.init()    
+    db.init()    
 
     worker = worker.worker(app=app)    
     options = {

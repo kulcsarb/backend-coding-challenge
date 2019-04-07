@@ -40,13 +40,13 @@ def translate(sid, text):
                 target_language="es"
         )            
         
-        # db.new_translation(sid, \
-        #         translation.uid, \
-        #         translation.text, \
-        #         translation.source_language, \
-        #         translation.target_language, \
-        #         translation.status
-        # )
+        db.new_translation(sid, \
+                translation.uid, \
+                translation.text, \
+                translation.source_language, \
+                translation.target_language, \
+                translation.status
+        )
 
         status_event(sid, translation)
 
@@ -62,10 +62,10 @@ def get_translation(sid, uid):
     try:
         translation = unbabel.get_translation(uid)            
 
-        # db.update_translation(uid, \
-        #             translation.status, \
-        #             translation.translation
-        # )
+        db.update_translation(uid, \
+                    translation.status, \
+                    translation.translation
+        )
 
         status_event(sid, translation)
         
